@@ -1,0 +1,51 @@
+services:
+  app:
+    build: .
+    container_name: app
+    restart: always
+    volumes:
+      - ./topgram:/app/topgram
+      - ./home:/app/home
+      - ./Oauth2:/app/Oauth2
+      - ./static:/app/static
+      - ./manage.py:/app/manage.py
+      - ./requirements.txt:/app/requirements.txt
+    env_file:
+      - .env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+  postgres_db:
+    image: postgres:17.4-alpine
+    container_name: postgres_db
+    command: postgres -c max_connections=300 -c shared_buffers=256MB
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  migrations:
+    build: .
+    container_name: migrations
+    command: python manage.py migrate
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres_data:

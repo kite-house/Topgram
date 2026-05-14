@@ -1,0 +1,23 @@
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+
+# Python
+venv
+__pycache__
+*.pyc
+
+# Docs
+README.md
+readme.md
+LICENSE
+
+# Env example
+.env.example
+
+# Tasks
+tasks.txt

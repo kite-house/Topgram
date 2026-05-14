@@ -30,15 +30,11 @@ FERNET_SECRET_KEY = os.environ.get('FERNET_SECRET_KEY')
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ["topgram.up.railway.app"]
+ALLOWED_HOSTS = ["*"]
 
 # Edit the following line and place your railway URL, and your custom URL in the array.
-CSRF_TRUSTED_ORIGINS = [
-    "https://topgram.up.railway.app", 
-    # NOTE: Place your custom url here if any
-]
 # Application definition
 
 INSTALLED_APPS = [
@@ -91,12 +87,12 @@ WSGI_APPLICATION = 'topgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get("DATABASE_NAME"),
-        'USER': os.environ.get("DATABASE_USER"),
-        'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
-        'HOST': os.environ.get("DATABASE_HOST"),
-        'PORT': os.environ.get("DATABASE_PORT"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),             
+        'PASSWORD': os.environ.get("DB_PASS"),      
+        'HOST': os.environ.get("DB_HOST"),               
+        'PORT': os.environ.get("DB_PORT"),
     }
 }
 
