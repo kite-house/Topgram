@@ -35,7 +35,6 @@ DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = ["*"]
 
 # Edit the following line and place your railway URL, and your custom URL in the array.
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',

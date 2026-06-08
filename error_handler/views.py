@@ -1,7 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
-
 def error404(request, exception):
     return render(request, 'error.html', context={'error_code' : '404', 'error_description' : 'Заблудились?'})
 

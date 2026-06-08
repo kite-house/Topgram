@@ -37,7 +37,6 @@ def home(request, user = None):
             UserData(request,user).send_message()
             return http.HttpResponse(render(request, 'home.html', context=UserData(request,user).data()))
             
-            #return http.HttpResponse(context=Data_user(request,user).data())
     return render(request, 'home.html', context=UserData(request,user).data())
 
     
