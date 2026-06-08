@@ -1,86 +1,43 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Topgram</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link rel="shortcut icon" type="image/png" href="{% static 'favicon/logo.png' %}">
-  <link rel="stylesheet" href= "{% static 'home/css/home.css' %}">
-  <script type="text/javascript" src="{% static 'home/js/home.js' %}"></script>
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
-    rel="stylesheet"
-  />
+  <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
+  <script src="{% static 'home/js/home.js' %}"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 </head>
-
 <body>
   <div class="app">
     <div class="header">
       <div class="logo">
-          <img src="{% static 'favicon/logo.png'%}">
+        <img src="{% static 'favicon/logo.png' %}" alt="Topgram">
+        <span class="logo-text">Topgram</span>
       </div>
       <div class="user-settings">
-        <div class="dark-light", onclick="dark_light()" >
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        <div class="dark-light" onclick="dark_light()">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
           </svg>
         </div>
-          <a href = '/settings/'>
-            <img class="user-profile" src="{{owner_avatar}}"
-                class="account-profile">
-            </a>
+        <a href="/settings/">
+          <img class="user-profile" src="{{ owner_avatar }}" alt="Профиль">
+        </a>
       </div>
-      
-      {% if request.path == '/settings/' or request.path == '/settings_error/'%}
-      <style>
-        .overlay {
-          display: block;
-          position: fixed;
-          width: 100%;
-          height: 100%;
-          filter: brightness(20%);
-          background-color: rgba(0, 0, 0, 0.5); /* 50% opacity black overlay */
-          z-index: 9998;
-        }
-      </style>
-
-      <div class="overlay"></div>
-      <div class="edit_user">
-        {% if request.path == '/settings_error/' %}
-        <div class="wrapper-warning">
-          <div class="card">
-            <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
-            <div class="subject">
-              <h4>{{request.GET.error}}<h4>
-            </div >
-            <a href="/{{chat.name}}" style ="text-decoration: none; color: black;">
-            <div class="icon-times"><i class="fas fa-times"></i></div>
-            </a>
-          </div>
-        </div>
-        {% endif %}   
-        <p class = 'label_settings' >Профиль</p>
-          <img class="edit_avatar" src="{{owner_avatar}}">
-        <form action = '' role = 'settings' role="settings" autocomplete="off" method="post"> {% csrf_token %}
-          <input name = 'edit_avatar' class = 'edit_user_text' autocomplete="off" placeholder="Введите новую ссылку на аватар">
-          <input name = 'edit_display_name' class = 'edit_user_text' accept="off" autocomplete="off" placeholder="Отображаймый ник: {{display_owner_name}}">
-          <p class='owner_username'>Ваш ник: {{owner_name}}</p>
-          <a class = 'exit' href = "/">Назад</a>
-          <button type ='submit' class = 'complete_edit'>Применить</button>
-        </form>
-      </div>
-  {% endif %}
     </div>
+
     <div class="wrapper">
+      <!-- Панель чатов -->
       <div class="conversation-area">
-        <form action = '' role="search" autocomplete="off" method="post"> {% csrf_token %}
+        <form action="" role="search" autocomplete="off" method="post">
+          {% csrf_token %}
           <label for="search"></label>
-          <input name = 'search' id="search" type="search" placeholder="Поиск..." autofocus required />
-          <button id = 'search' type="submit">Go</button> 
+          <input name="search" id="search" type="search" placeholder="Поиск..." autofocus required>
+          <button id="search" type="submit">Go</button>
         </form>
 
         {% if request.path == '/error_search/' %}
@@ -88,115 +45,110 @@
           <div class="card">
             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
             <div class="subject">
-              <h4>Данный пользователь не найден!<h4>
-            </div >
-            <a href="/{{chat.name}}" style ="text-decoration: none; color: black;">
-            <div class="icon-times"><i class="fas fa-times"></i></div>
+              <h4>Данный пользователь не найден!</h4>
+            </div>
+            <a href="/" style="text-decoration: none; color: black;">
+              <div class="icon-times"><i class="fas fa-times"></i></div>
             </a>
           </div>
         </div>
-        {% endif %}   
+        {% endif %}
 
         {% for chat in chat_list %}
-          {% if chat.name == recipient_name %}
-          <div class="msg active {{chat.is_online}}" onmouseover="this.querySelector('.delete-btn').style.display='block'" onmouseout="this.querySelector('.delete-btn').style.display='none'">
-          {% else %}
-          <div class="msg {{chat.is_online}}" onmouseover="this.querySelector('.delete-btn').style.display='block'" onmouseout="this.querySelector('.delete-btn').style.display='none'">
-          {% endif %}
-          <button class="delete-btn" style="display: none;" onclick="deleteChat(' {{ chat.id }} ')">❌</button>
-          <a href="/{{chat.username}}" style ="text-decoration: none; color: black;">
-            <link href="{{chat.username}}">
-            <img class="msg-profile" src= {{chat.avatar}}>
+        <div class="msg {% if chat.name == recipient_name %}active{% endif %} {{ chat.is_online }}">
+          <button class="delete-btn" style="display: none;" onclick="deleteChat('{{ chat.id }}')">❌</button>
+          <a href="/{{ chat.username }}" style="text-decoration: none; color: inherit;">
+            <img class="msg-profile" src="{{ chat.avatar }}" alt="">
             <div class="msg-detail">
               {% if display_owner_name == chat.name %}
-                <div class="msg-username">Избранное</div>
+              <div class="msg-username">Избранное</div>
               {% else %}
-                <div class="msg-username">{{chat.name}}</div>
+              <div class="msg-username">{{ chat.name }}</div>
               {% endif %}
               <div class="msg-content">
-                <span class="msg-message">{{chat.last_msg}}</span>
-                <span class="msg-date">{{chat.last_time_msg}}</span>
+                <span class="msg-message">{{ chat.last_msg }}</span>
+                <span class="msg-date">{{ chat.last_time_msg }}</span>
               </div>
-            </a>
             </div>
-          </div>
+          </a>
+        </div>
         {% endfor %}
         <div class="overlay"></div>
       </div>
+
+      <!-- Область чата -->
       <div class="chat-area">
         <div class="chat-area-header">
           {% if display_owner_name == recipient_name %}
           <div class="chat-area-title">Избранное</div>
-
           {% else %}
-          <div class="chat-area-title">{{recipient_name}}</div>
-
-            {% if is_online %}
-              <div class="chat-area-online">{{is_online}}</div>
-            {% endif %}
+          <div class="chat-area-title">{{ recipient_name }}</div>
+          {% if is_online %}
+          <div class="chat-area-online">{{ is_online }}</div>
+          {% endif %}
           {% endif %}
         </div>
+
         <div class="chat-area-main">
           {% for message in messages %}
-          
-          <div class="chat-msg {{message.sender_status}}" onmouseover="this.querySelector('.delete-btn').style.display='block'" onmouseout="this.querySelector('.delete-btn').style.display='none'">
-            <button class="delete-btn" style="display: none;" onclick="deleteMessage(' {{ message.id }} ')">❌</button>
+          <div class="chat-msg {{ message.sender_status }}">
+            <button class="delete-btn" style="display: none;" onclick="deleteMessage('{{ message.id }}')">❌</button>
             <div class="chat-msg-profile">
-              <img class="chat-msg-img" src="{{message.sender_avatar}}" alt="">
-              <div class="chat-msg-date">{{message.time}}</div>
+              <img class="chat-msg-img" src="{{ message.sender_avatar }}" alt="">
+              <div class="chat-msg-date">{{ message.time }}</div>
             </div>
             <div class="chat-msg-content">
-              <div class="chat-msg-text">{{message.content}}</div>
+              <div class="chat-msg-text">{{ message.content }}</div>
             </div>
           </div>
-          
           {% endfor %}
-        </div> 
-        <form id = 'input_message' action = '' autocomplete="off"> {% csrf_token %}
-          <div class="chat-area-footer">          
-            <input id = 'input_message' value = "" type="text" name = 'input_message' placeholder="Отправить сообщение..." />
-            <div id="emoji-menu" class = "emoji-menu" style="display: none;">
+        </div>
+
+        <form id="input_message" action="" autocomplete="off">
+          {% csrf_token %}
+          <div class="chat-area-footer">
+            <input id="input_message_field" value="" type="text" name="input_message" placeholder="Отправить сообщение...">
+            <div id="emoji-icon" style="cursor: pointer;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
+              </svg>
+            </div>
+            <div id="emoji-menu" class="emoji-menu" style="display: none;">
               <button type="button" onclick="insertEmoji('😂')">😂</button>
-              <button type="button" onclick="insertEmoji('🙄')">🙄</button>
               <button type="button" onclick="insertEmoji('❤️')">❤️</button>
-              <button type="button" onclick="insertEmoji('🤣')">🤣</button>
-              <button type="button" onclick="insertEmoji('😭')">😭</button>
+              <button type="button" onclick="insertEmoji('🔥')">🔥</button>
               <button type="button" onclick="insertEmoji('👍')">👍</button>
-              <button type="button" onclick="insertEmoji('😳')">😳</button>
+              <button type="button" onclick="insertEmoji('😭')">😭</button>
+              <button type="button" onclick="insertEmoji('😍')">😍</button>
+              <button type="button" onclick="insertEmoji('🤣')">🤣</button>
+              <button type="button" onclick="insertEmoji('😊')">😊</button>
+              <button type="button" onclick="insertEmoji('🙄')">🙄</button>
               <button type="button" onclick="insertEmoji('😎')">😎</button>
               <button type="button" onclick="insertEmoji('🥰')">🥰</button>
-              <button type="button" onclick="insertEmoji('🥲')">🥲</button>
-              <button type="button" onclick="insertEmoji('🫠')">🫠</button>
               <button type="button" onclick="insertEmoji('😘')">😘</button>
               <button type="button" onclick="insertEmoji('😡')">😡</button>
               <button type="button" onclick="insertEmoji('🤬')">🤬</button>
               <button type="button" onclick="insertEmoji('😇')">😇</button>
-              <button type="button" onclick="insertEmoji('🫡')">🫡</button>
-              <button type="button" onclick="insertEmoji('👌')">👌</button>
               <button type="button" onclick="insertEmoji('🥳')">🥳</button>
               <button type="button" onclick="insertEmoji('😉')">😉</button>
-              <button type="button" onclick="insertEmoji('🫤')">🫤</button>
               <button type="button" onclick="insertEmoji('😒')">😒</button>
               <button type="button" onclick="insertEmoji('🧐')">🧐</button>
               <button type="button" onclick="insertEmoji('🥵')">🥵</button>
               <button type="button" onclick="insertEmoji('😬')">😬</button>
               <button type="button" onclick="insertEmoji('😚')">😚</button>
-              <button type="button" onclick="insertEmoji('🥹')">🥹</button>
               <button type="button" onclick="insertEmoji('🤨')">🤨</button>
-              <button type="button" onclick="insertEmoji('😊')">😊</button>
               <button type="button" onclick="insertEmoji('😅')">😅</button>
               <button type="button" onclick="insertEmoji('😞')">😞</button>
               <button type="button" onclick="insertEmoji('😢')">😢</button>
               <button type="button" onclick="insertEmoji('😱')">😱</button>
               <button type="button" onclick="insertEmoji('😔')">😔</button>
               <button type="button" onclick="insertEmoji('😓')">😓</button>
-              <button type="button" onclick="insertEmoji('😍')">😍</button>
               <button type="button" onclick="insertEmoji('😋')">😋</button>
               <button type="button" onclick="insertEmoji('💔')">💔</button>
               <button type="button" onclick="insertEmoji('😏')">😏</button>
               <button type="button" onclick="insertEmoji('😁')">😁</button>
               <button type="button" onclick="insertEmoji('😃')">😃</button>
-              <button type="button" onclick="insertEmoji('🫨')">🫨</button>
               <button type="button" onclick="insertEmoji('🙁')">🙁</button>
               <button type="button" onclick="insertEmoji('😛')">😛</button>
               <button type="button" onclick="insertEmoji('🤗')">🤗</button>
@@ -213,16 +165,51 @@
               <button type="button" onclick="insertEmoji('😵')">😵</button>
               <button type="button" onclick="insertEmoji('🤐')">🤐</button>
             </div>
-            <svg id="emoji-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
-            </svg>
           </div>
         </form>
       </div>
     </div>
   </div>
-</body>
 
+  {% if request.path == '/settings/' or request.path == '/settings_error/' %}
+  <style>
+    .overlay-settings {
+      display: block;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+  </style>
+  <div class="overlay-settings"></div>
+  <div class="edit_user">
+    {% if request.path == '/settings_error/' %}
+    <div class="wrapper-warning">
+      <div class="card">
+        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="subject">
+          <h4>{{ request.GET.error }}</h4>
+        </div>
+        <a href="/" style="text-decoration: none; color: black;">
+          <div class="icon-times"><i class="fas fa-times"></i></div>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+    <p class="label_settings">Профиль</p>
+    <img class="edit_avatar" src="{{ owner_avatar }}" alt="">
+    <form action="" role="settings" autocomplete="off" method="post">
+      {% csrf_token %}
+      <input name="edit_avatar" class="edit_user_text" autocomplete="off" placeholder="Введите новую ссылку на аватар">
+      <input name="edit_display_name" class="edit_user_text" autocomplete="off" placeholder="Отображаемый ник: {{ display_owner_name }}">
+      <p class="owner_username">Ваш ник: {{ owner_name }}</p>
+      <a class="exit" href="/">Назад</a>
+      <button type="submit" class="complete_edit">Применить</button>
+    </form>
+  </div>
+  {% endif %}
+</body>
 </html>

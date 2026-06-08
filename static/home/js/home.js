@@ -1,62 +1,44 @@
 function dark_light(){
-  const colors = document.querySelectorAll(".color");
-
-  colors.forEach(color => {
-    color.addEventListener("click", e => {
-      colors.forEach(c => c.classList.remove("selected"));
-      const theme = color.getAttribute("data-color");
-      document.body.setAttribute("data-theme", theme);
-      color.classList.add("selected");
-    });
-  });
   document.body.classList.toggle("dark-mode");
 }
 
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-          }
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
       }
+    }
   }
   return cookieValue;
 }
 
-var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 var csrftoken = getCookie('csrftoken');
-var xhr = new XMLHttpRequest();
-xhr.open('POST', '/save_timezone/', true);
-xhr.setRequestHeader('Content-Type', 'application/json');
-xhr.setRequestHeader('X-CSRFToken', csrftoken);
 
-xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-            console.log('Timezone saved successfully');
-        } else {
-            console.error('Error saving timezone');
-        }
-    }
-};
-
-xhr.send(JSON.stringify({ timezone: userTimezone }));
-
+fetch('/save_timezone/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': csrftoken,
+  },
+  body: JSON.stringify({ timezone: userTimezone }),
+});
 
 $.ajaxSetup({
   headers: {
-      "X-CSRFToken": getCookie("csrftoken")
+    "X-CSRFToken": getCookie("csrftoken")
   }
 });
+
 $(document).ready(function () {
   $("#input_message").on("submit", function (event) {
     var $form = $(this);
     event.preventDefault();
-
     document.getElementById('emoji-menu').style.display = 'none';
     $.ajax({
       url: document.URL,
@@ -65,14 +47,8 @@ $(document).ready(function () {
       success: function(data){
         $("body").html(data);
       }
-    })
+    });
   });
-});
-
-$.ajaxSetup({
-  headers: {
-      "X-CSRFToken": getCookie("csrftoken")
-  }
 });
 
 $(document).ready(function () {
@@ -82,86 +58,39 @@ $(document).ready(function () {
   emojiIcon.addEventListener('click', function() {
     if (emojiMenu.style.display === 'block'){
       emojiMenu.style.display = 'none';
-    }
-    else {
+    } else {
       emojiMenu.style.display = 'block';
     }
   });
-
 });
 
 function insertEmoji(emoji) {
-  var input = document.getElementById('input_message').input_message;
+  var input = document.getElementById('input_message_field');
   input.value += emoji;
 }
 
 function deleteMessage(message_id) {
-  $.ajaxSetup({
-    headers: {
-        "X-CSRFToken": getCookie("csrftoken")
-    }
-  });
-  // Создание AJAX-запроса
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', document.URL, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  // Отправка данных на сервер Django
   $.ajax({
     url: document.URL,
     type: "post",
     data: {
-      delete_message : message_id
+      delete_message: message_id
     },
     success: function(data){
       $("body").html(data);
     }
-  })
-
-  // Обработка ответа от сервера
-  xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-          // Обработка успешного ответа от сервера
-          console.log('Сообщение успешно удалено');
-      } else {
-          // Обработка ошибки
-          console.error('Ошибка удаления сообщения');
-      }
-  };
+  });
 }
 
-
 function deleteChat(chat_id) {
-  $.ajaxSetup({
-    headers: {
-        "X-CSRFToken": getCookie("csrftoken")
-    }
-  });
-  // Создание AJAX-запроса
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', document.URL, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  // Отправка данных на сервер Django
   $.ajax({
     url: document.URL,
     type: "post",
     data: {
-      delete_chat : chat_id
+      delete_chat: chat_id
     },
     success: function(data){
       $("body").html(data);
     }
-  })
-
-  // Обработка ответа от сервера
-  xhr.onload = function() {
-      if (xhr.status >= 200 && xhr.status < 300) {
-          // Обработка успешного ответа от сервера
-          console.log('Чат успешно удалено');
-      } else {
-          // Обработка ошибки
-          console.error('Ошибка удаления чата');
-      }
-  };
+  });
 }
